@@ -1,30 +1,30 @@
-import axios from 'axios';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../features/auth/types/AuthTypes';
-import { API_BASE_URL } from '../constants/config';
- 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-});
- 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
+import { LoginRequest, RegisterRequest, AuthResponse } from '../features/auth/types/AuthTypes';
+
 export const authService = {
-  login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', {
-      username: data.username,
-      email: data.email,
-      password: data.password,
+
+  async register({ username, email, password }: RegisterRequest): Promise<AuthResponse> {
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(credential.user, { displayName: username });
+    await setDoc(doc(db, 'users', credential.user.uid), {
+      username,
+      email,
+      createdAt: serverTimestamp(),
     });
-    return response.data;
+    const token = await credential.user.getIdToken();
+    return { token, uid: credential.user.uid };
   },
- 
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    });
-    return response.data;
+
+  async login({ email, password }: LoginRequest): Promise<AuthResponse> {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const token = await credential.user.getIdToken();
+    return { token, uid: credential.user.uid };
   },
+
 };
- 

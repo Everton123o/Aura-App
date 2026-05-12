@@ -13,10 +13,10 @@ interface Props { navigation: any }
 export default function RegisterScreen({ navigation }: Props) {
   const vm = useRegisterViewModel();
 
-  function onSuccess(token: string) {
-    console.log('Token:', token);
-    // navigation.replace('Home');
-  }
+ function onSuccess(token: string) {
+  console.log('onSuccess chamado, navegando para Login');
+  navigation.replace('Login'); // ← descomente e troque o console.log
+}
 
   return (
     <LinearGradient colors={['#5B7BFF', '#3A5BEF']} style={s.gradient}>

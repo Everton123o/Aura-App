@@ -14,8 +14,7 @@ export default function LoginScreen({ navigation }: Props) {
   const vm = useLoginViewModel();
 
   function onSuccess(token: string) {
-    console.log('Token:', token);
-    // navigation.replace('Home');
+    navigation.replace('Home');
   }
 
   return (
@@ -27,7 +26,6 @@ export default function LoginScreen({ navigation }: Props) {
         <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
           <View style={s.card}>
 
-            {/* Logo */}
             <View style={s.iconCircle}>
               <Ionicons name="barbell-outline" size={30} color="#fff" />
             </View>
@@ -38,13 +36,6 @@ export default function LoginScreen({ navigation }: Props) {
               ? <Text style={s.generalError}>{vm.errors.general}</Text>
               : null}
 
-            <AuthInput
-              icon={<Ionicons name="person-outline" size={18} color="#999" />}
-              placeholder="User name"
-              value={vm.username}
-              onChangeText={vm.setUsername}
-              error={vm.errors.username}
-            />
             <AuthInput
               icon={<Ionicons name="mail-outline" size={18} color="#999" />}
               placeholder="Email"
@@ -83,8 +74,8 @@ export default function LoginScreen({ navigation }: Props) {
 }
 
 const s = StyleSheet.create({
-  gradient:     { flex: 1 },
-  flex:         { flex: 1 },
+  gradient:      { flex: 1 },
+  flex:          { flex: 1 },
   scroll: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -96,7 +87,7 @@ const s = StyleSheet.create({
     borderRadius: 20,
     padding: 28,
     width: '100%',
-    maxWidth: 400,           // ← limita largura na web
+    maxWidth: 400,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -113,9 +104,9 @@ const s = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 16,
   },
-  title:        { fontSize: 26, fontWeight: '700', color: '#1a1a2e', textAlign: 'center', marginBottom: 24 },
-  generalError: { fontSize: 12, color: '#e05555', textAlign: 'center', marginBottom: 12 },
-  linkRow:      { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
-  linkText:     { fontSize: 13, color: '#555' },
-  linkHighlight:{ fontSize: 13, color: '#4A6CF7', fontWeight: '600' },
+  title:         { fontSize: 26, fontWeight: '700', color: '#1a1a2e', textAlign: 'center', marginBottom: 24 },
+  generalError:  { fontSize: 12, color: '#e05555', textAlign: 'center', marginBottom: 12 },
+  linkRow:       { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
+  linkText:      { fontSize: 13, color: '#555' },
+  linkHighlight: { fontSize: 13, color: '#4A6CF7', fontWeight: '600' },
 });

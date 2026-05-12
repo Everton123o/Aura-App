@@ -1,20 +1,35 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { LoginRequest } from '../features/auth/types/AuthTypes';
 
+const FIREBASE_ERRORS: Record<string, string> = {
+  'auth/user-not-found':         'Usuário não encontrado.',
+  'auth/wrong-password':         'Senha incorreta.',
+  'auth/invalid-email':          'Email inválido.',
+  'auth/user-disabled':          'Usuário desativado.',
+  'auth/too-many-requests':      'Muitas tentativas. Tente mais tarde.',
+  'auth/network-request-failed': 'Sem conexão com a internet.',
+  'auth/invalid-credential':     'Email ou senha incorretos.',
+};
+
 export function useLoginViewModel() {
-  const [username, setUsername] = useState('');
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(false);
   const [errors, setErrors]     = useState<Record<string, string>>({});
+  const mounted = useRef(true);
+
+  useEffect(() => () => { mounted.current = false; }, []);
 
   function validate(): boolean {
+    setErrors({});
     const e: Record<string, string> = {};
-    if (!username.trim()) e.username = 'Username is required';
-    if (!email.trim())    e.email    = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Invalid email';
-    if (!password.trim()) e.password = 'Password is required';
+    if (!email.trim())
+      e.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(email))
+      e.email = 'Invalid email';
+    if (!password.trim())
+      e.password = 'Password is required';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -23,15 +38,19 @@ export function useLoginViewModel() {
     if (!validate()) return;
     setLoading(true);
     try {
-      const payload: LoginRequest = { username, email, password };
+      const payload: LoginRequest = { email, password };
       const res = await authService.login(payload);
+      if (mounted.current) setLoading(false);
       onSuccess(res.token);
     } catch (err: any) {
-      setErrors({ general: err?.response?.data?.message || 'Login failed. Please try again.' });
+      if (mounted.current) {
+        const message = FIREBASE_ERRORS[err?.code] ?? 'Login failed. Please try again.';
+        setErrors({ general: message });
+      }
     } finally {
-      setLoading(false);
+      if (mounted.current) setLoading(false);
     }
   }
 
-  return { username, setUsername, email, setEmail, password, setPassword, loading, errors, handleLogin };
+  return { email, setEmail, password, setPassword, loading, errors, handleLogin };
 }

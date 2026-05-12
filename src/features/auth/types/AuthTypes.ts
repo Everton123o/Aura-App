@@ -1,4 +1,3 @@
-// features/auth/types/AuthTypes.ts
 export interface LoginRequest {
   email: string;
   password: string;
