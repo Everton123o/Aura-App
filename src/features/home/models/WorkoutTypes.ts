@@ -6,7 +6,9 @@ export interface Workout {
   estimatedDuration: number;
   exerciseCount: number;
   notes?: string;
+  createdAt?: string;
   lastUpdated: string;
+  completedAt?: string | null;
 }
 
 export interface CreateWorkoutRequest {

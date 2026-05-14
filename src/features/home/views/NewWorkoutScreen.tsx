@@ -1,10 +1,15 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, ScrollView,
-  SafeAreaView, KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { useNewWorkoutViewModel } from '../viewmodels/useNewWorkoutViewModel';
-import { Input, ChipSelector, PrimaryButton } from '../components/WorkoutComponents';
+import { ChipSelector, Input, PrimaryButton } from '../components/WorkoutComponents';
 
 interface Props { navigation: any }
 
@@ -13,8 +18,6 @@ export default function NewWorkoutScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={s.safe}>
-
-      {/* ── Header ── */}
       <View style={s.header}>
         <View style={s.headerInner}>
           <Text style={s.backBtn} onPress={() => navigation.goBack()}>←</Text>
@@ -66,6 +69,7 @@ export default function NewWorkoutScreen({ navigation }: Props) {
             value={vm.duration}
             onChangeText={vm.setDuration}
             keyboardType="numeric"
+            error={vm.errors.duration}
           />
 
           <Input
@@ -84,7 +88,6 @@ export default function NewWorkoutScreen({ navigation }: Props) {
             loading={vm.loading}
             style={{ marginTop: 8 }}
           />
-
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

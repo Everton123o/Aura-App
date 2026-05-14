@@ -1,6 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { workoutService } from '../../../services/workoutService';
 import { Workout } from '../models/WorkoutTypes';
+
+function isSameWeek(dateIso?: string | null) {
+  if (!dateIso) return false;
+
+  const date = new Date(dateIso);
+  if (Number.isNaN(date.getTime())) return false;
+
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setHours(0, 0, 0, 0);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+  return date >= startOfWeek && date < endOfWeek;
+}
 
 export function useHomeViewModel() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -13,23 +30,23 @@ export function useHomeViewModel() {
     try {
       const data = await workoutService.getAll();
       setWorkouts(data);
-    } catch {
-      setError('Não foi possível carregar os treinos.');
+    } catch (err: any) {
+      setError(err?.message || 'Não foi possível carregar os treinos.');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { fetchWorkouts(); }, [fetchWorkouts]);
-
   async function deleteWorkout(id: string) {
     try {
       await workoutService.delete(id);
       setWorkouts(prev => prev.filter(w => w.id !== id));
-    } catch {
-      setError('Erro ao excluir treino.');
+    } catch (err: any) {
+      setError(err?.message || 'Erro ao excluir treino.');
     }
   }
 
-  return { workouts, loading, error, deleteWorkout, refresh: fetchWorkouts };
+  const completedThisWeek = workouts.filter(w => isSameWeek(w.completedAt)).length;
+
+  return { workouts, loading, error, completedThisWeek, deleteWorkout, refresh: fetchWorkouts };
 }

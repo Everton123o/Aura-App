@@ -48,7 +48,7 @@ export default function LoginScreen({ navigation }: Props) {
 
             <AuthButton
               label="Login"
-              onPress={() => vm.handleLogin(() => navigation.replace('Home'))}
+              onPress={() => vm.handleLogin(() => undefined)}
               loading={vm.loading}
             />
 

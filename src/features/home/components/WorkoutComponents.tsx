@@ -101,8 +101,8 @@ const cs = StyleSheet.create({
 // ─── WorkoutCard ──────────────────────────────────────────────────────────────
 interface WorkoutCardProps {
   workout: Workout;
-  onStart:  () => void;
-  onEdit:   () => void;
+  onStart?: () => void;
+  onEdit?:  () => void;
   onDelete: () => void;
 }
 export function WorkoutCard({ workout, onStart, onEdit, onDelete }: WorkoutCardProps) {
@@ -118,14 +118,18 @@ export function WorkoutCard({ workout, onStart, onEdit, onDelete }: WorkoutCardP
         {workout.muscleGroup} · {workout.division} · ~{workout.estimatedDuration} min
       </Text>
       <View style={wc.actions}>
-        <TouchableOpacity style={[wc.btn, wc.btnPrimary]} onPress={onStart} activeOpacity={0.85}>
-          <Ionicons name="play" size={12} color="#fff" />
-          <Text style={wc.btnPrimaryTxt}>Iniciar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[wc.btn, wc.btnOutline]} onPress={onEdit} activeOpacity={0.85}>
-          <Ionicons name="create-outline" size={13} color={MUTED} />
-          <Text style={wc.btnOutlineTxt}>Editar</Text>
-        </TouchableOpacity>
+        {onStart ? (
+          <TouchableOpacity style={[wc.btn, wc.btnPrimary]} onPress={onStart} activeOpacity={0.85}>
+            <Ionicons name="play" size={12} color="#fff" />
+            <Text style={wc.btnPrimaryTxt}>Iniciar</Text>
+          </TouchableOpacity>
+        ) : null}
+        {onEdit ? (
+          <TouchableOpacity style={[wc.btn, wc.btnOutline]} onPress={onEdit} activeOpacity={0.85}>
+            <Ionicons name="create-outline" size={13} color={MUTED} />
+            <Text style={wc.btnOutlineTxt}>Editar</Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity style={[wc.btn, wc.btnDanger]} onPress={onDelete} activeOpacity={0.85}>
           <Ionicons name="trash-outline" size={13} color={DANGER} />
         </TouchableOpacity>

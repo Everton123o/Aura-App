@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../../../services/authService';
 
 export function useRegisterViewModel() {
+  const { setAuthenticatedUser } = useAuth();
   const [username, setUsername]               = useState('');
   const [email, setEmail]                     = useState('');
   const [password, setPassword]               = useState('');
@@ -11,32 +13,27 @@ export function useRegisterViewModel() {
 
   function validate(): boolean {
     const e: Record<string, string> = {};
-    if (!username.trim())    e.username = 'Username is required';
-    if (!email.trim())       e.email    = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Invalid email';
-    if (!password.trim())    e.password = 'Password is required';
-    else if (password.length < 6) e.password = 'Password must be at least 6 characters';
-    if (!confirmPassword.trim())  e.confirmPassword = 'Please confirm your password';
-    else if (password !== confirmPassword) e.confirmPassword = 'Passwords do not match';
+    if (!username.trim())    e.username = 'Informe seu nome';
+    if (!email.trim())       e.email    = 'Informe seu email';
+    else if (!/\S+@\S+\.\S+/.test(email.trim())) e.email = 'Email inválido';
+    if (!password.trim())    e.password = 'Informe sua senha';
+    else if (password.length < 6) e.password = 'A senha precisa ter pelo menos 6 caracteres';
+    if (!confirmPassword.trim())  e.confirmPassword = 'Confirme sua senha';
+    else if (password !== confirmPassword) e.confirmPassword = 'As senhas não conferem';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
   async function handleRegister(onSuccess: () => void) {
+    if (loading) return;
     if (!validate()) return;
     setLoading(true);
     try {
-      await authService.register(username, email, password);
+      const result = await authService.register(username, email, password);
+      setAuthenticatedUser(result.user);
       onSuccess();
     } catch (err: any) {
-      const code = err?.code || '';
-      if (code === 'auth/email-already-in-use') {
-        setErrors({ general: 'This email is already registered' });
-      } else if (code === 'auth/weak-password') {
-        setErrors({ general: 'Password is too weak' });
-      } else {
-        setErrors({ general: 'Registration failed. Try again.' });
-      }
+      setErrors({ general: err?.message || 'Não foi possível criar sua conta.' });
     } finally {
       setLoading(false);
     }

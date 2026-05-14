@@ -63,7 +63,7 @@ export default function RegisterScreen({ navigation }: Props) {
 
             <AuthButton
               label="Sign Up"
-              onPress={() => vm.handleRegister(() => navigation.replace('Home'))}
+              onPress={() => vm.handleRegister(() => undefined)}
               loading={vm.loading}
             />
 

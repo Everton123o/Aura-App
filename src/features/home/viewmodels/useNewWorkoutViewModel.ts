@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { workoutService } from '../../../services/workoutService';
 import { CreateWorkoutRequest } from '../models/WorkoutTypes';
 
-const DIVISIONS     = ['Treino A', 'Treino B', 'Treino C', 'Full Body'];
+const DIVISIONS = ['Treino A', 'Treino B', 'Treino C', 'Full Body'];
 const MUSCLE_GROUPS = ['Peito', 'Costas', 'Pernas', 'Ombro', 'Bíceps', 'Tríceps', 'Abdômen'];
 
 export function useNewWorkoutViewModel() {
@@ -16,28 +16,36 @@ export function useNewWorkoutViewModel() {
 
   function validate(): boolean {
     const e: Record<string, string> = {};
-    if (!name.trim())        e.name        = 'Nome é obrigatório';
-    if (!division.trim())    e.division    = 'Escolha uma divisão';
+    const parsedDuration = duration.trim() ? Number(duration) : 45;
+
+    if (!name.trim()) e.name = 'Nome é obrigatório';
+    if (!division.trim()) e.division = 'Escolha uma divisão';
     if (!muscleGroup.trim()) e.muscleGroup = 'Escolha um grupo muscular';
+    if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
+      e.duration = 'Informe uma duração válida';
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
   async function handleCreate(onSuccess: () => void) {
+    if (loading) return;
     if (!validate()) return;
+
     setLoading(true);
     try {
       const payload: CreateWorkoutRequest = {
-        name,
+        name: name.trim(),
         division,
         muscleGroup,
-        estimatedDuration: Number(duration) || 45,
-        notes,
+        estimatedDuration: duration.trim() ? Number(duration) : 45,
+        notes: notes.trim() || undefined,
       };
       await workoutService.create(payload);
       onSuccess();
     } catch (err: any) {
-      setErrors({ general: err?.response?.data?.message || 'Erro ao criar treino.' });
+      setErrors({ general: err?.message || 'Erro ao criar treino.' });
     } finally {
       setLoading(false);
     }

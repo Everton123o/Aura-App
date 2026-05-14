@@ -1,19 +1,39 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getApp, getApps } from 'firebase/app';
+import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { createAsyncStorage } from '@react-native-async-storage/async-storage';
 
-// Substitua com suas credenciais do Firebase Console
+function requireEnv(name: string) {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Variável de ambiente obrigatória ausente: ${name}`);
+  }
+
+  return value;
+}
+
 const firebaseConfig = {
-  apiKey: "AIzaSyD6y71uHe04RsddYZhWjDySG0NsBH_iZ1w",
-  authDomain: "aura-app-9f4b0.firebaseapp.com",
-  projectId: "aura-app-9f4b0",
-  storageBucket: "aura-app-9f4b0.firebasestorage.app",
-  messagingSenderId: "1047052620725",
-  appId: "1:1047052620725:web:5253bd19d25e9120ed7ffc",
-  measurementId: "G-LZW5LFLMQE"
+  apiKey: requireEnv('EXPO_PUBLIC_FIREBASE_API_KEY'),
+  authDomain: requireEnv('EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+  projectId: requireEnv('EXPO_PUBLIC_FIREBASE_PROJECT_ID'),
+  storageBucket: requireEnv('EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: requireEnv('EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: requireEnv('EXPO_PUBLIC_FIREBASE_APP_ID'),
+  measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const authStorage = createAsyncStorage('aura-auth');
 
-export const auth = getAuth(app);
+export const auth = (() => {
+  try {
+    return initializeAuth(app, {
+      persistence: getReactNativePersistence(authStorage),
+    });
+  } catch {
+    return getAuth(app);
+  }
+})();
 export const db   = getFirestore(app);

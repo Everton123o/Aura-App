@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../../../services/authService';
 
 export function useLoginViewModel() {
+  const { setAuthenticatedUser } = useAuth();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(false);
@@ -9,29 +11,24 @@ export function useLoginViewModel() {
 
   function validate(): boolean {
     const e: Record<string, string> = {};
-    if (!email.trim())    e.email    = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Invalid email';
-    if (!password.trim()) e.password = 'Password is required';
+    if (!email.trim()) e.email = 'Informe seu email';
+    else if (!/\S+@\S+\.\S+/.test(email.trim())) e.email = 'Email inválido';
+    if (!password.trim()) e.password = 'Informe sua senha';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
   async function handleLogin(onSuccess: () => void) {
+    if (loading) return;
     if (!validate()) return;
+
     setLoading(true);
     try {
-      await authService.login(email, password);
+      const result = await authService.login(email, password);
+      setAuthenticatedUser(result.user);
       onSuccess();
     } catch (err: any) {
-      // Traduz erros do Firebase para mensagens amigáveis
-      const code = err?.code || '';
-      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        setErrors({ general: 'Email or password incorrect' });
-      } else if (code === 'auth/too-many-requests') {
-        setErrors({ general: 'Too many attempts. Try again later.' });
-      } else {
-        setErrors({ general: 'Login failed. Try again.' });
-      }
+      setErrors({ general: err?.message || 'Não foi possível entrar.' });
     } finally {
       setLoading(false);
     }
