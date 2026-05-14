@@ -2,31 +2,27 @@ import { useState } from 'react';
 import { workoutService } from '../../../services/workoutService';
 import { CreateWorkoutRequest } from '../models/WorkoutTypes';
 
-const DIVISIONS = ['Treino A', 'Treino B', 'Treino C', 'Full Body'];
-const MUSCLE_GROUPS = ['Peito', 'Costas', 'Pernas', 'Ombro', 'Bíceps', 'Tríceps', 'Abdômen'];
+const DIVISIONS = ['Push', 'Pull', 'Legs', 'Upper', 'Lower', 'Full Body'];
+const DEFAULT_DIVISION = 'A definir';
+const DEFAULT_MUSCLE_GROUP = 'A definir';
+const DEFAULT_DURATION = 45;
 
 export function useNewWorkoutViewModel() {
-  const [name, setName]               = useState('');
-  const [division, setDivision]       = useState('');
-  const [muscleGroup, setMuscleGroup] = useState('');
-  const [duration, setDuration]       = useState('');
-  const [notes, setNotes]             = useState('');
-  const [loading, setLoading]         = useState(false);
-  const [errors, setErrors]           = useState<Record<string, string>>({});
+  const [name, setName] = useState('');
+  const [division, setDivision] = useState('');
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   function validate(): boolean {
-    const e: Record<string, string> = {};
-    const parsedDuration = duration.trim() ? Number(duration) : 45;
+    const nextErrors: Record<string, string> = {};
 
-    if (!name.trim()) e.name = 'Nome é obrigatório';
-    if (!division.trim()) e.division = 'Escolha uma divisão';
-    if (!muscleGroup.trim()) e.muscleGroup = 'Escolha um grupo muscular';
-    if (!Number.isFinite(parsedDuration) || parsedDuration <= 0) {
-      e.duration = 'Informe uma duração válida';
+    if (!name.trim()) {
+      nextErrors.name = 'Nome é obrigatório';
     }
 
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   }
 
   async function handleCreate(onSuccess: () => void) {
@@ -35,13 +31,15 @@ export function useNewWorkoutViewModel() {
 
     setLoading(true);
     try {
+      const normalizedDivision = division.trim() || DEFAULT_DIVISION;
       const payload: CreateWorkoutRequest = {
         name: name.trim(),
-        division,
-        muscleGroup,
-        estimatedDuration: duration.trim() ? Number(duration) : 45,
+        division: normalizedDivision,
+        muscleGroup: DEFAULT_MUSCLE_GROUP,
+        estimatedDuration: DEFAULT_DURATION,
         notes: notes.trim() || undefined,
       };
+
       await workoutService.create(payload);
       onSuccess();
     } catch (err: any) {
@@ -52,14 +50,15 @@ export function useNewWorkoutViewModel() {
   }
 
   return {
-    name, setName,
-    division, setDivision,
-    muscleGroup, setMuscleGroup,
-    duration, setDuration,
-    notes, setNotes,
-    loading, errors,
+    name,
+    setName,
+    division,
+    setDivision,
+    notes,
+    setNotes,
+    loading,
+    errors,
     divisions: DIVISIONS,
-    muscleGroups: MUSCLE_GROUPS,
     handleCreate,
   };
 }
