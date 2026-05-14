@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { authService } from '../services/authService';
-import { LoginRequest } from '../features/auth/types/AuthTypes';
+import { authService } from '../../../services/authService';
 
 export function useLoginViewModel() {
-  const [username, setUsername] = useState('');
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading]   = useState(false);
@@ -11,7 +9,6 @@ export function useLoginViewModel() {
 
   function validate(): boolean {
     const e: Record<string, string> = {};
-    if (!username.trim()) e.username = 'Username is required';
     if (!email.trim())    e.email    = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) e.email = 'Invalid email';
     if (!password.trim()) e.password = 'Password is required';
@@ -19,19 +16,26 @@ export function useLoginViewModel() {
     return Object.keys(e).length === 0;
   }
 
-  async function handleLogin(onSuccess: (token: string) => void) {
+  async function handleLogin(onSuccess: () => void) {
     if (!validate()) return;
     setLoading(true);
     try {
-      const payload: LoginRequest = { username, email, password };
-      const res = await authService.login(payload);
-      onSuccess(res.token);
+      await authService.login(email, password);
+      onSuccess();
     } catch (err: any) {
-      setErrors({ general: err?.response?.data?.message || 'Login failed. Please try again.' });
+      // Traduz erros do Firebase para mensagens amigáveis
+      const code = err?.code || '';
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setErrors({ general: 'Email or password incorrect' });
+      } else if (code === 'auth/too-many-requests') {
+        setErrors({ general: 'Too many attempts. Try again later.' });
+      } else {
+        setErrors({ general: 'Login failed. Try again.' });
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  return { username, setUsername, email, setEmail, password, setPassword, loading, errors, handleLogin };
+  return { email, setEmail, password, setPassword, loading, errors, handleLogin };
 }

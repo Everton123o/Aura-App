@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useRegisterViewModel } from '../../../hooks/useRegisterViewModel';
+import { useRegisterViewModel } from '../viewmodels/useRegisterViewModel';
 import { AuthInput, AuthButton } from '../../../components/AuthComponents';
 
 interface Props { navigation: any }
@@ -13,21 +13,12 @@ interface Props { navigation: any }
 export default function RegisterScreen({ navigation }: Props) {
   const vm = useRegisterViewModel();
 
-  function onSuccess(token: string) {
-    console.log('Token:', token);
-    // navigation.replace('Home');
-  }
-
   return (
     <LinearGradient colors={['#5B7BFF', '#3A5BEF']} style={s.gradient}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={s.flex}
-      >
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={s.flex}>
         <ScrollView contentContainerStyle={s.scroll} keyboardShouldPersistTaps="handled">
           <View style={s.card}>
 
-            {/* Logo */}
             <View style={s.iconCircle}>
               <Ionicons name="barbell-outline" size={30} color="#fff" />
             </View>
@@ -72,7 +63,7 @@ export default function RegisterScreen({ navigation }: Props) {
 
             <AuthButton
               label="Sign Up"
-              onPress={() => vm.handleRegister(onSuccess)}
+              onPress={() => vm.handleRegister(() => navigation.replace('Home'))}
               loading={vm.loading}
             />
 
@@ -93,34 +84,9 @@ export default function RegisterScreen({ navigation }: Props) {
 const s = StyleSheet.create({
   gradient:     { flex: 1 },
   flex:         { flex: 1 },
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 28,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 28,
-    width: '100%',
-    maxWidth: 400,           // ← limita largura na web
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#4A6CF7',
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
+  scroll:       { flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 28 },
+  card:         { backgroundColor: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 6 },
+  iconCircle:   { width: 64, height: 64, borderRadius: 32, backgroundColor: '#4A6CF7', alignSelf: 'center', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
   title:        { fontSize: 26, fontWeight: '700', color: '#1a1a2e', textAlign: 'center', marginBottom: 24 },
   generalError: { fontSize: 12, color: '#e05555', textAlign: 'center', marginBottom: 12 },
   linkRow:      { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },

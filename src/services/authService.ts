@@ -1,30 +1,44 @@
-import axios from 'axios';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../features/auth/types/AuthTypes';
-import { API_BASE_URL } from '../constants/config';
- 
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-});
- 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../constants/firebaseConfig';
+
 export const authService = {
-  login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', {
-      username: data.username,
-      email: data.email,
-      password: data.password,
+
+  // ── Registro ────────────────────────────────────────────────────────────────
+  register: async (username: string, email: string, password: string) => {
+    // Cria o usuário no Firebase Auth
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = credential.user;
+
+    // Salva o username no perfil
+    await updateProfile(user, { displayName: username });
+
+    // Salva dados extras no Firestore
+    await setDoc(doc(db, 'users', user.uid), {
+      username,
+      email,
+      createdAt: new Date().toISOString(),
     });
-    return response.data;
+
+    return user;
   },
- 
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/register', {
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    });
-    return response.data;
+
+  // ── Login ───────────────────────────────────────────────────────────────────
+  login: async (email: string, password: string) => {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    return credential.user;
   },
+
+  // ── Logout ──────────────────────────────────────────────────────────────────
+  logout: async () => {
+    await signOut(auth);
+  },
+
+  // ── Usuário atual ───────────────────────────────────────────────────────────
+  getCurrentUser: () => auth.currentUser,
 };
- 

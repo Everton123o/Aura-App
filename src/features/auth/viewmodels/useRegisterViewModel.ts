@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { authService } from '../services/authService';
-import { RegisterRequest } from '../features/auth/types/AuthTypes';
+import { authService } from '../../../services/authService';
 
 export function useRegisterViewModel() {
   const [username, setUsername]               = useState('');
@@ -23,19 +22,32 @@ export function useRegisterViewModel() {
     return Object.keys(e).length === 0;
   }
 
-  async function handleRegister(onSuccess: (token: string) => void) {
+  async function handleRegister(onSuccess: () => void) {
     if (!validate()) return;
     setLoading(true);
     try {
-      const payload: RegisterRequest = { username, email, password, confirmPassword };
-      const res = await authService.register(payload);
-      onSuccess(res.token);
+      await authService.register(username, email, password);
+      onSuccess();
     } catch (err: any) {
-      setErrors({ general: err?.response?.data?.message || 'Registration failed. Please try again.' });
+      const code = err?.code || '';
+      if (code === 'auth/email-already-in-use') {
+        setErrors({ general: 'This email is already registered' });
+      } else if (code === 'auth/weak-password') {
+        setErrors({ general: 'Password is too weak' });
+      } else {
+        setErrors({ general: 'Registration failed. Try again.' });
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  return { username, setUsername, email, setEmail, password, setPassword, confirmPassword, setConfirmPassword, loading, errors, handleRegister };
+  return {
+    username, setUsername,
+    email, setEmail,
+    password, setPassword,
+    confirmPassword, setConfirmPassword,
+    loading, errors,
+    handleRegister,
+  };
 }
