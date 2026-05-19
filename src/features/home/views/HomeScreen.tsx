@@ -36,7 +36,7 @@ function getInitials(name: string) {
 
 export default function HomeScreen({ navigation }: Props) {
   const { user, logout } = useAuth();
-  const { workouts, loading, error, completedThisWeek, deleteWorkout, refresh } = useHomeViewModel();
+  const { workouts, loading, error, deleteWorkout, refresh } = useHomeViewModel();
   const [refreshing, setRefreshing] = React.useState(false);
 
   useFocusEffect(
@@ -52,11 +52,6 @@ export default function HomeScreen({ navigation }: Props) {
   }
 
   const userName = user?.username || 'Usuário';
-  const totalMinutes = workouts.reduce((acc, w) => acc + w.estimatedDuration, 0);
-  const totalHours = Math.floor(totalMinutes / 60);
-  const remainingMinutes = totalMinutes % 60;
-  const plannedTime = totalHours > 0 ? `${totalHours}h${remainingMinutes ? ` ${remainingMinutes}min` : ''}` : `${remainingMinutes}min`;
-
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.header}>
@@ -82,21 +77,6 @@ export default function HomeScreen({ navigation }: Props) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4A6CF7" />
         }
       >
-        <View style={s.statsRow}>
-          <View style={s.stat}>
-            <Text style={s.statNum}>{workouts.length}</Text>
-            <Text style={s.statLbl}>Treinos</Text>
-          </View>
-          <View style={s.stat}>
-            <Text style={s.statNum}>{completedThisWeek}</Text>
-            <Text style={s.statLbl}>Esta semana</Text>
-          </View>
-          <View style={s.stat}>
-            <Text style={s.statNum}>{plannedTime}</Text>
-            <Text style={s.statLbl}>Planejado</Text>
-          </View>
-        </View>
-
         <Text style={s.sectionLabel}>Meus treinos</Text>
 
         {loading ? (
@@ -137,10 +117,6 @@ const s = StyleSheet.create({
   greeting:    { fontSize: 18, fontWeight: '700', color: '#1a1a2e' },
   greetingSub: { fontSize: 13, color: '#888', marginTop: 2 },
   scroll:      { padding: 20 },
-  statsRow:    { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  stat:        { flex: 1, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#E2E6F0', padding: 12, alignItems: 'center' },
-  statNum:     { fontSize: 20, fontWeight: '700', color: '#4A6CF7' },
-  statLbl:     { fontSize: 11, color: '#888', marginTop: 2 },
   sectionLabel:{ fontSize: 11, fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 },
   errorTxt:    { color: '#E05555', textAlign: 'center', marginTop: 20, fontSize: 13 },
   fabWrap:     { position: 'absolute', bottom: 28, left: 20, right: 20 },

@@ -1,8 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getApp, getApps } from 'firebase/app';
-import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { getAuth, inMemoryPersistence, initializeAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { createAsyncStorage } from '@react-native-async-storage/async-storage';
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -25,12 +24,11 @@ const firebaseConfig = {
 };
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-const authStorage = createAsyncStorage('aura-auth');
 
 export const auth = (() => {
   try {
     return initializeAuth(app, {
-      persistence: getReactNativePersistence(authStorage),
+      persistence: inMemoryPersistence,
     });
   } catch {
     return getAuth(app);

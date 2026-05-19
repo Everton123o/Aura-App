@@ -2,15 +2,12 @@ import { useState } from 'react';
 import { workoutService } from '../../../services/workoutService';
 import { CreateWorkoutRequest } from '../models/WorkoutTypes';
 
-const DIVISIONS = ['Push', 'Pull', 'Legs', 'Upper', 'Lower', 'Full Body'];
 const DEFAULT_DIVISION = 'A definir';
 const DEFAULT_MUSCLE_GROUP = 'A definir';
 const DEFAULT_DURATION = 45;
 
 export function useNewWorkoutViewModel() {
   const [name, setName] = useState('');
-  const [division, setDivision] = useState('');
-  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -31,13 +28,11 @@ export function useNewWorkoutViewModel() {
 
     setLoading(true);
     try {
-      const normalizedDivision = division.trim() || DEFAULT_DIVISION;
       const payload: CreateWorkoutRequest = {
         name: name.trim(),
-        division: normalizedDivision,
+        division: DEFAULT_DIVISION,
         muscleGroup: DEFAULT_MUSCLE_GROUP,
         estimatedDuration: DEFAULT_DURATION,
-        notes: notes.trim() || undefined,
       };
 
       await workoutService.create(payload);
@@ -52,13 +47,8 @@ export function useNewWorkoutViewModel() {
   return {
     name,
     setName,
-    division,
-    setDivision,
-    notes,
-    setNotes,
     loading,
     errors,
-    divisions: DIVISIONS,
     handleCreate,
   };
 }

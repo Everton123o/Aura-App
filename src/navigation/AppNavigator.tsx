@@ -35,6 +35,7 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator
         id="Root"
+        initialRouteName={user ? 'Home' : 'Register'}
         screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
       >
         {user ? (
@@ -44,8 +45,8 @@ export default function AppNavigator() {
           </>
         ) : (
           <>
-            <Stack.Screen name="Login"    component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login"    component={LoginScreen} />
           </>
         )}
       </Stack.Navigator>

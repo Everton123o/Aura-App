@@ -23,33 +23,19 @@ export default function NewWorkoutScreen() {
   const {
     name,
     setName,
-    division,
-    setDivision,
-    notes,
-    setNotes,
     loading,
     errors,
-    divisions,
     handleCreate,
   } = useNewWorkoutViewModel();
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [nameTouched, setNameTouched] = useState(false);
 
-  const nameSuggestion =
-    division && name.trim() === '' ? `Treino • ${division}` : null;
   const showNameError = (nameTouched && name.trim() === '') || !!errors.name;
 
   function handleProceed() {
     setNameTouched(true);
     handleCreate(() => navigation.goBack());
-  }
-
-  function applyNameSuggestion() {
-    if (nameSuggestion) {
-      setName(nameSuggestion);
-      setNameTouched(true);
-    }
   }
 
   return (
@@ -108,73 +94,10 @@ export default function NewWorkoutScreen() {
 
             {showNameError ? (
               <Text style={styles.errorText}>{errors.name || 'Nome é obrigatório'}</Text>
-            ) : nameSuggestion ? (
-              <TouchableOpacity
-                onPress={applyNameSuggestion}
-                style={styles.suggestionRow}
-                activeOpacity={0.75}
-              >
-                <Text style={styles.suggestionText}>
-                  Sugestão: <Text style={styles.suggestionBold}>{nameSuggestion}</Text>
-                </Text>
-                <Text style={styles.suggestionUse}>Usar</Text>
-              </TouchableOpacity>
             ) : (
               <Text style={styles.charCount}>{name.length}/60</Text>
             )}
 
-            <View style={styles.divider} />
-
-            <Text style={styles.fieldLabel}>
-              Divisão <Text style={styles.optional}>(opcional)</Text>
-            </Text>
-            <View style={styles.chipsRow}>
-              {divisions.map(option => {
-                const selected = division === option;
-
-                return (
-                  <TouchableOpacity
-                    key={option}
-                    style={[styles.chip, selected && styles.chipActive]}
-                    onPress={() => setDivision(selected ? '' : option)}
-                    disabled={loading}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={[styles.chipText, selected && styles.chipTextActive]}>
-                      {option}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <View style={styles.divider} />
-
-            <Text style={styles.fieldLabel}>
-              Observações <Text style={styles.optional}>(opcional)</Text>
-            </Text>
-            <View
-              style={[
-                styles.inputWrap,
-                styles.textAreaWrap,
-                focusedField === 'notes' && styles.inputFocused,
-              ]}
-            >
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Ex: Foco em hipertrofia, descanso de 90s..."
-                placeholderTextColor="#B0B7C8"
-                value={notes}
-                onChangeText={setNotes}
-                onFocus={() => setFocusedField('notes')}
-                onBlur={() => setFocusedField(null)}
-                multiline
-                numberOfLines={3}
-                textAlignVertical="top"
-                maxLength={200}
-                editable={!loading}
-              />
-            </View>
           </View>
 
           {errors.general ? (
@@ -262,7 +185,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 10,
   },
-  optional: { fontWeight: '400', letterSpacing: 0 },
   inputWrap: {
     borderWidth: 1.5,
     borderColor: BORDER,
@@ -274,36 +196,8 @@ const styles = StyleSheet.create({
   inputFocused: { borderColor: PRIMARY, backgroundColor: '#EEF1FF' },
   inputErrorBorder: { borderColor: ERROR_C, backgroundColor: '#FFF5F5' },
   input: { fontSize: 15, color: TEXT, fontWeight: '500' },
-  textAreaWrap: { paddingVertical: 12 },
-  textArea: { minHeight: 72, lineHeight: 22 },
   charCount: { fontSize: 11, color: MUTED, textAlign: 'right', marginTop: 5 },
   errorText: { fontSize: 12, color: ERROR_C, marginTop: 5, fontWeight: '600' },
-  suggestionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 7,
-    backgroundColor: '#EEF1FF',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-  },
-  suggestionText: { fontSize: 12, color: '#5A6898', flex: 1 },
-  suggestionBold: { fontWeight: '700', color: PRIMARY },
-  suggestionUse: { fontSize: 12, fontWeight: '700', color: PRIMARY, marginLeft: 8 },
-  divider: { height: 1, backgroundColor: BORDER, marginVertical: 18 },
-  chipsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: BORDER,
-    backgroundColor: BG,
-  },
-  chipActive: { backgroundColor: PRIMARY, borderColor: PRIMARY },
-  chipText: { fontSize: 13, fontWeight: '600', color: MUTED },
-  chipTextActive: { color: '#FFFFFF' },
   globalErrorBox: {
     marginTop: 12,
     backgroundColor: '#FFEBEE',
