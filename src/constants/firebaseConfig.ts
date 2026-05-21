@@ -1,7 +1,9 @@
 import { initializeApp } from 'firebase/app';
 import { getApp, getApps } from 'firebase/app';
-import { getAuth, inMemoryPersistence, initializeAuth } from 'firebase/auth';
+import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -27,11 +29,16 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 export const auth = (() => {
   try {
+    // AsyncStorage doesn't work on web — use default persistence there
+    if (Platform.OS === 'web') {
+      return getAuth(app);
+    }
     return initializeAuth(app, {
-      persistence: inMemoryPersistence,
+      persistence: getReactNativePersistence(AsyncStorage),
     });
   } catch {
     return getAuth(app);
   }
 })();
-export const db   = getFirestore(app);
+
+export const db = getFirestore(app);
