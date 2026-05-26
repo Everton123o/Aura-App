@@ -83,6 +83,21 @@ function buildCreatePayload(data: CreateWorkoutRequest) {
   };
 }
 
+function mapWorkoutError(error: any, fallbackMessage: string, fallbackCode: string): AppError {
+  const code = error?.code ?? fallbackCode;
+
+  const messages: Record<string, string> = {
+    'permission-denied': 'Sem permissao para salvar este treino. Confira as regras do Firestore para users/{uid}/workouts.',
+    unauthenticated: 'Sessao expirada. Entre novamente para continuar.',
+    unavailable: 'Nao foi possivel conectar ao Firestore. Verifique sua internet e tente novamente.',
+    'failed-precondition': 'O Firestore recusou a operacao por configuracao ou indice ausente.',
+    'invalid-argument': 'Dados invalidos para criar o treino.',
+    'not-found': 'Caminho do Firestore nao encontrado.',
+  };
+
+  return new AppError(messages[code] ?? fallbackMessage, code, error);
+}
+
 export const workoutService = {
   getAll: async (): Promise<Workout[]> => {
     try {
@@ -91,7 +106,7 @@ export const workoutService = {
       return snapshot.docs.map(d => mapWorkout(d.id, d.data()));
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError('Não foi possível carregar os treinos.', 'workout/list-failed', error);
+      throw mapWorkoutError(error, 'Nao foi possivel carregar os treinos.', 'workout/list-failed');
     }
   },
 
@@ -107,7 +122,7 @@ export const workoutService = {
       });
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError('Erro ao criar treino.', 'workout/create-failed', error);
+      throw mapWorkoutError(error, 'Erro ao criar treino.', 'workout/create-failed');
     }
   },
 
@@ -116,7 +131,7 @@ export const workoutService = {
       await deleteDoc(doc(db, 'users', requireCurrentUserId(), 'workouts', id));
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError('Erro ao excluir treino.', 'workout/delete-failed', error);
+      throw mapWorkoutError(error, 'Erro ao excluir treino.', 'workout/delete-failed');
     }
   },
 
@@ -128,7 +143,7 @@ export const workoutService = {
       });
     } catch (error) {
       if (error instanceof AppError) throw error;
-      throw new AppError('Erro ao atualizar treino.', 'workout/update-failed', error);
+      throw mapWorkoutError(error, 'Erro ao atualizar treino.', 'workout/update-failed');
     }
   },
 };

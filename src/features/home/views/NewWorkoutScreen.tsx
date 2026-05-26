@@ -35,7 +35,9 @@ export default function NewWorkoutScreen() {
 
   function handleProceed() {
     setNameTouched(true);
-    handleCreate(() => navigation.goBack());
+    handleCreate(workoutId => {
+      navigation.replace('WorkoutExercises', { workoutId });
+    });
   }
 
   return (

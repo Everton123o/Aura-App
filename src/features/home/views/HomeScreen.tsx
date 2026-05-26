@@ -90,6 +90,7 @@ export default function HomeScreen({ navigation }: Props) {
             <WorkoutCard
               key={w.id}
               workout={w}
+              onStart={() => navigation.navigate('ChooseExercise', { workoutId: w.id })}
               onDelete={() => deleteWorkout(w.id)}
             />
           ))
