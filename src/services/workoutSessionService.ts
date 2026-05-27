@@ -56,18 +56,29 @@ export const workoutSessionService = {
 
   async getLastRecord(
     workoutId: string,
-    exerciseId: string
+    exerciseId: string,
+    series?: number
   ): Promise<{ reps: number; weight: number } | null> {
     // Importação dinâmica para não poluir o bundle se não for usada
-    const { getDocs, query, orderBy, limit, collection: col } = await import('firebase/firestore');
+    const { getDocs, query, where, orderBy, limit, collection: col } = await import('firebase/firestore');
     const uid = auth.currentUser?.uid;
     if (!uid) return null;
 
     const ref  = col(db, 'users', uid, 'workouts', workoutId, 'exercises', exerciseId, 'records');
-    const snap = await getDocs(query(ref, orderBy('executedAt', 'desc'), limit(1)));
+    const snap = series
+      ? await getDocs(query(ref, where('series', '==', series)))
+      : await getDocs(query(ref, orderBy('executedAt', 'desc'), limit(1)));
     if (snap.empty) return null;
 
-    const d = snap.docs[0].data();
+    const lastDoc = series
+      ? snap.docs.reduce((latest, doc) => {
+          const latestAt = String(latest.data().executedAt ?? '');
+          const docAt = String(doc.data().executedAt ?? '');
+          return docAt > latestAt ? doc : latest;
+        }, snap.docs[0])
+      : snap.docs[0];
+
+    const d = lastDoc.data();
     return { reps: d.reps, weight: d.weight };
   },
 };

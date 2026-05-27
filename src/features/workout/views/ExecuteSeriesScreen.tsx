@@ -131,7 +131,7 @@ export default function ExecuteSeriesScreen() {
     (async () => {
       setIsLoadingLast(true);
       try {
-        const record = await workoutSessionService.getLastRecord(workoutId, exerciseId);
+        const record = await workoutSessionService.getLastRecord(workoutId, exerciseId, currentSeries);
         if (!alive) return;
         setLastRecord(record);
         if (record) {
@@ -154,7 +154,7 @@ export default function ExecuteSeriesScreen() {
     return () => {
       alive = false;
     };
-  }, [workoutId, exerciseId, defaultReps, defaultWeight]);
+  }, [workoutId, exerciseId, currentSeries, defaultReps, defaultWeight]);
 
   const lastPerformance = isLoadingLast
     ? 'Carregando...'
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
 
 const modal = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.45)' },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
   sheet: {
     backgroundColor: CARD, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: 24, paddingTop: 16, paddingBottom: 32,
