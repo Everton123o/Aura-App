@@ -1,9 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getApp, getApps } from 'firebase/app';
-import { getAuth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
+import { getAuth, inMemoryPersistence, initializeAuth } from 'firebase/auth';
+import { getFirestore, initializeFirestore } from 'firebase/firestore';
 
 function requireEnv(name: string) {
   const value = process.env[name];
@@ -38,6 +36,15 @@ export const auth = (() => {
     });
   } catch {
     return getAuth(app);
+  }
+})();
+export const db = (() => {
+  try {
+    return initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    });
+  } catch {
+    return getFirestore(app);
   }
 })();
 

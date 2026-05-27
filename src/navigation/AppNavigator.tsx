@@ -7,6 +7,11 @@ import LoginScreen      from '../features/auth/screens/LoginScreen';
 import RegisterScreen   from '../features/auth/screens/RegisterScreen';
 import HomeScreen       from '../features/home/views/HomeScreen';
 import NewWorkoutScreen from '../features/home/views/NewWorkoutScreen';
+import WorkoutExercisesScreen from '../features/home/views/WorkoutExercisesScreen';
+import CreateExerciseScreen from '../features/home/views/CreateExerciseScreen';
+import ChooseExerciseScreen from '../features/workout/views/ChooseExerciseScreen';
+import ExecuteSeriesScreen from '../features/workout/views/ExecuteSeriesScreen';
+import RestTimerScreen from '../features/workout/views/RestTimerScreen';
 import { useAuth } from '../features/auth/contexts/AuthContext';
 
 export type RootStackParamList = {
@@ -14,8 +19,27 @@ export type RootStackParamList = {
   Register:       undefined;
   Home:           undefined;
   NewWorkout:     undefined;
+  WorkoutExercises: { workoutId: string };
+  CreateExercise:   { workoutId: string };
   EditWorkout:    { workoutId: string };
   ExecuteWorkout: { workoutId: string };
+  ChooseExercise: { workoutId: string; completedExerciseId?: string; completedExerciseIds?: string[] };
+  ExecuteSeries: {
+    workoutId: string;
+    exerciseId: string;
+    exerciseName: string;
+    totalSets: number;
+    currentSeries: number;
+    completedExerciseIds?: string[];
+  };
+  RestTimer: {
+    workoutId: string;
+    exerciseId: string;
+    exerciseName: string;
+    totalSets: number;
+    currentSeries: number;
+    completedExerciseIds?: string[];
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -42,6 +66,11 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="Home"       component={HomeScreen} />
             <Stack.Screen name="NewWorkout" component={NewWorkoutScreen} />
+            <Stack.Screen name="WorkoutExercises" component={WorkoutExercisesScreen} />
+            <Stack.Screen name="CreateExercise" component={CreateExerciseScreen} />
+            <Stack.Screen name="ChooseExercise" component={ChooseExerciseScreen} />
+            <Stack.Screen name="ExecuteSeries" component={ExecuteSeriesScreen} />
+            <Stack.Screen name="RestTimer" component={RestTimerScreen} />
           </>
         ) : (
           <>

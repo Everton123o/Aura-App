@@ -22,7 +22,7 @@ export function useNewWorkoutViewModel() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  async function handleCreate(onSuccess: () => void) {
+  async function handleCreate(onSuccess: (workoutId: string) => void) {
     if (loading) return;
     if (!validate()) return;
 
@@ -35,8 +35,8 @@ export function useNewWorkoutViewModel() {
         estimatedDuration: DEFAULT_DURATION,
       };
 
-      await workoutService.create(payload);
-      onSuccess();
+      const workout = await workoutService.create(payload);
+      onSuccess(workout.id);
     } catch (err: any) {
       setErrors({ general: err?.message || 'Erro ao criar treino.' });
     } finally {
