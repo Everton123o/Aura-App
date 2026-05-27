@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -99,6 +100,17 @@ function mapWorkoutError(error: any, fallbackMessage: string, fallbackCode: stri
 }
 
 export const workoutService = {
+  getById: async (id: string): Promise<Workout | null> => {
+    try {
+      const snapshot = await getDoc(doc(db, 'users', requireCurrentUserId(), 'workouts', id));
+      if (!snapshot.exists()) return null;
+      return mapWorkout(snapshot.id, snapshot.data());
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw mapWorkoutError(error, 'Nao foi possivel carregar o treino.', 'workout/get-failed');
+    }
+  },
+
   getAll: async (): Promise<Workout[]> => {
     try {
       const q = query(workoutsRef(), orderBy('lastUpdated', 'desc'));
@@ -144,6 +156,18 @@ export const workoutService = {
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw mapWorkoutError(error, 'Erro ao atualizar treino.', 'workout/update-failed');
+    }
+  },
+
+  complete: async (id: string): Promise<void> => {
+    try {
+      await updateDoc(doc(db, 'users', requireCurrentUserId(), 'workouts', id), {
+        completedAt: serverTimestamp(),
+        lastUpdated: serverTimestamp(),
+      });
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw mapWorkoutError(error, 'Erro ao concluir treino.', 'workout/complete-failed');
     }
   },
 };

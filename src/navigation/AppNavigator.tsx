@@ -12,6 +12,7 @@ import CreateExerciseScreen from '../features/home/views/CreateExerciseScreen';
 import ChooseExerciseScreen from '../features/workout/views/ChooseExerciseScreen';
 import ExecuteSeriesScreen from '../features/workout/views/ExecuteSeriesScreen';
 import RestTimerScreen from '../features/workout/views/RestTimerScreen';
+import WorkoutSummaryScreen from '../features/workout/views/WorkoutSummaryScreen';
 import { useAuth } from '../features/auth/contexts/AuthContext';
 
 export type RootStackParamList = {
@@ -23,7 +24,13 @@ export type RootStackParamList = {
   CreateExercise:   { workoutId: string };
   EditWorkout:    { workoutId: string };
   ExecuteWorkout: { workoutId: string };
-  ChooseExercise: { workoutId: string; completedExerciseId?: string; completedExerciseIds?: string[] };
+  ChooseExercise: {
+    workoutId: string;
+    completedExerciseId?: string;
+    completedExerciseIds?: string[];
+    sessionStartedAt?: number;
+  };
+  WorkoutSummary: { workoutId: string; sessionStartedAt?: number };
   ExecuteSeries: {
     workoutId: string;
     exerciseId: string;
@@ -33,6 +40,7 @@ export type RootStackParamList = {
     defaultReps?: number;
     defaultWeight?: number;
     completedExerciseIds?: string[];
+    sessionStartedAt?: number;
   };
   RestTimer: {
     workoutId: string;
@@ -43,6 +51,7 @@ export type RootStackParamList = {
     defaultReps?: number;
     defaultWeight?: number;
     completedExerciseIds?: string[];
+    sessionStartedAt?: number;
   };
 };
 
@@ -75,6 +84,7 @@ export default function AppNavigator() {
             <Stack.Screen name="ChooseExercise" component={ChooseExerciseScreen} />
             <Stack.Screen name="ExecuteSeries" component={ExecuteSeriesScreen} />
             <Stack.Screen name="RestTimer" component={RestTimerScreen} />
+            <Stack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
           </>
         ) : (
           <>
