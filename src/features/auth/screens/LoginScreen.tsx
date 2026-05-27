@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity,
+  View, Text, StyleSheet, TouchableOpacity, Image,
   KeyboardAvoidingView, Platform, ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,7 +20,7 @@ export default function LoginScreen({ navigation }: Props) {
           <View style={s.card}>
 
             <View style={s.iconCircle}>
-              <Ionicons name="barbell-outline" size={30} color="#fff" />
+              <Image source={require('../../../img/aura-logo-removebg-preview.png')} style={s.logoImage} resizeMode="contain" />
             </View>
 
             <Text style={s.title}>Login</Text>
@@ -72,6 +72,7 @@ const s = StyleSheet.create({
   scroll:       { flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 28 },
   card:         { backgroundColor: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 6 },
   iconCircle:   { width: 64, height: 64, borderRadius: 32, backgroundColor: '#4A6CF7', alignSelf: 'center', alignItems: 'center', justifyContent: 'center', marginBottom: 16 },
+  logoImage:    { width: 54, height: 54, borderRadius: 28 },
   title:        { fontSize: 26, fontWeight: '700', color: '#1a1a2e', textAlign: 'center', marginBottom: 24 },
   generalError: { fontSize: 12, color: '#e05555', textAlign: 'center', marginBottom: 12 },
   linkRow:      { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },

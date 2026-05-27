@@ -31,7 +31,16 @@ function formatTime(seconds: number): string {
 export default function RestTimerScreen() {
   const navigation = useNavigation<NavProp>();
   const route      = useRoute<RouteProp_>();
-  const { workoutId, exerciseId, exerciseName, totalSets, currentSeries, completedExerciseIds = [] } = route.params;
+  const {
+    workoutId,
+    exerciseId,
+    exerciseName,
+    totalSets,
+    currentSeries,
+    defaultReps,
+    defaultWeight,
+    completedExerciseIds = [],
+  } = route.params;
 
   // Phase: 'choose' | 'countdown'
   const [phase,        setPhase]        = useState<'choose' | 'countdown'>('choose');
@@ -129,6 +138,8 @@ export default function RestTimerScreen() {
         exerciseName,
         totalSets,
         currentSeries: currentSeries + 1,
+        defaultReps,
+        defaultWeight,
         completedExerciseIds,
       });
     }
@@ -270,7 +281,7 @@ export default function RestTimerScreen() {
           {/* -15 */}
           <TouchableOpacity style={styles.controlBtn} onPress={() => adjustTime(-15)}>
             <Text style={styles.controlIcon}>↺</Text>
-            <Text style={styles.controlLabel}>15</Text>
+            <Text style={styles.controlLabel}>-15</Text>
           </TouchableOpacity>
 
           {/* Pause / Play */}
@@ -285,7 +296,7 @@ export default function RestTimerScreen() {
           {/* +15 */}
           <TouchableOpacity style={styles.controlBtn} onPress={() => adjustTime(15)}>
             <Text style={styles.controlIcon}>↻</Text>
-            <Text style={styles.controlLabel}>15</Text>
+            <Text style={styles.controlLabel}>+15</Text>
           </TouchableOpacity>
         </View>
 

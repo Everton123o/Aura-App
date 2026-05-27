@@ -30,6 +30,8 @@ export type RootStackParamList = {
     exerciseName: string;
     totalSets: number;
     currentSeries: number;
+    defaultReps?: number;
+    defaultWeight?: number;
     completedExerciseIds?: string[];
   };
   RestTimer: {
@@ -38,6 +40,8 @@ export type RootStackParamList = {
     exerciseName: string;
     totalSets: number;
     currentSeries: number;
+    defaultReps?: number;
+    defaultWeight?: number;
     completedExerciseIds?: string[];
   };
 };

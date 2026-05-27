@@ -32,8 +32,38 @@ interface StepperProps {
 }
 
 function Stepper({ label, value, min = 0, max = 999, step = 1, unit, onChange }: StepperProps) {
-  const decrement = () => onChange(Math.max(min, value - step));
-  const increment = () => onChange(Math.min(max, value + step));
+  const [draft, setDraft] = useState(String(value));
+
+  React.useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const updateValue = (next: number) => {
+    const rounded = Math.round(next * 10) / 10;
+    onChange(rounded);
+    setDraft(String(rounded));
+  };
+
+  const commitDraft = () => {
+    const parsed = Number(draft.replace(',', '.'));
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+    updateValue(Math.min(max, Math.max(min, parsed)));
+  };
+
+  const handleDraftChange = (text: string) => {
+    setDraft(text);
+    if (!text.trim() || text === ',' || text === '.') return;
+    const parsed = Number(text.replace(',', '.'));
+    if (Number.isFinite(parsed)) {
+      onChange(Math.min(max, Math.max(min, parsed)));
+    }
+  };
+
+  const decrement = () => updateValue(Math.max(min, value - step));
+  const increment = () => updateValue(Math.min(max, value + step));
 
   return (
     <View style={stepperStyles.wrapper}>
@@ -49,7 +79,15 @@ function Stepper({ label, value, min = 0, max = 999, step = 1, unit, onChange }:
         </TouchableOpacity>
 
         <View style={stepperStyles.valueWrap}>
-          <Text style={stepperStyles.value}>{value}</Text>
+          <TextInput
+            style={stepperStyles.value}
+            value={draft}
+            onChangeText={handleDraftChange}
+            onBlur={commitDraft}
+            onSubmitEditing={commitDraft}
+            keyboardType="decimal-pad"
+            selectTextOnFocus
+          />
           {unit && <Text style={stepperStyles.unit}>{unit}</Text>}
         </View>
 
@@ -162,7 +200,7 @@ export default function CreateExerciseScreen() {
               value={weight}
               min={0}
               max={500}
-              step={2.5}
+              step={1}
               unit="kg"
               onChange={setWeight}
             />

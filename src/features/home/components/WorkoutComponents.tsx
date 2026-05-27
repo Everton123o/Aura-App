@@ -114,9 +114,6 @@ export function WorkoutCard({ workout, onStart, onEdit, onDelete }: WorkoutCardP
           <Text style={wc.badgeTxt}>{workout.exerciseCount} ex</Text>
         </View>
       </View>
-      <Text style={wc.detail}>
-        {workout.muscleGroup} · {workout.division} · ~{workout.estimatedDuration} min
-      </Text>
       <View style={wc.actions}>
         {onStart ? (
           <TouchableOpacity style={[wc.btn, wc.btnPrimary]} onPress={onStart} activeOpacity={0.85}>
@@ -143,7 +140,6 @@ const wc = StyleSheet.create({
   name:          { fontSize: 15, fontWeight: '700', color: '#1a1a2e' },
   badge:         { backgroundColor: '#EEF0FE', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
   badgeTxt:      { fontSize: 11, fontWeight: '700', color: BLUE },
-  detail:        { fontSize: 12, color: MUTED, marginBottom: 10 },
   actions:       { flexDirection: 'row', gap: 8 },
   btn:           { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 7, borderRadius: 8 },
   btnPrimary:    { flex: 1, backgroundColor: BLUE },

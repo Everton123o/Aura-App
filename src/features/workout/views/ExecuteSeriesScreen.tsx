@@ -1,8 +1,8 @@
 // src/features/workout/views/ExecuteSeriesScreen.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  Modal, ActivityIndicator,
+  Modal, ActivityIndicator, TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -22,6 +22,36 @@ function Stepper({
   label: string; value: number; min?: number; max?: number; step?: number;
   onChange: (v: number) => void;
 }) {
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const updateValue = (next: number) => {
+    const rounded = Math.round(next * 10) / 10;
+    onChange(rounded);
+    setDraft(String(rounded));
+  };
+
+  const commitDraft = () => {
+    const parsed = Number(draft.replace(',', '.'));
+    if (!Number.isFinite(parsed)) {
+      setDraft(String(value));
+      return;
+    }
+    updateValue(Math.min(max, Math.max(min, parsed)));
+  };
+
+  const handleDraftChange = (text: string) => {
+    setDraft(text);
+    if (!text.trim() || text === ',' || text === '.') return;
+    const parsed = Number(text.replace(',', '.'));
+    if (Number.isFinite(parsed)) {
+      onChange(Math.min(max, Math.max(min, parsed)));
+    }
+  };
+
   return (
     <View style={stepStyles.wrap}>
       <Text style={stepStyles.label}>{label}</Text>
@@ -34,7 +64,15 @@ function Stepper({
         >
           <Text style={[stepStyles.btnTxt, value <= min && stepStyles.btnTxtOff]}>−</Text>
         </TouchableOpacity>
-        <Text style={stepStyles.value}>{value}</Text>
+        <TextInput
+          style={stepStyles.value}
+          value={draft}
+          onChangeText={handleDraftChange}
+          onBlur={commitDraft}
+          onSubmitEditing={commitDraft}
+          keyboardType="decimal-pad"
+          selectTextOnFocus
+        />
         <TouchableOpacity
           style={[stepStyles.btn, value >= max && stepStyles.btnOff]}
           onPress={() => onChange(Math.min(max, value + step))}
@@ -67,17 +105,62 @@ const stepStyles = StyleSheet.create({
 export default function ExecuteSeriesScreen() {
   const navigation = useNavigation<NavProp>();
   const route      = useRoute<RouteProp_>();
-  const { workoutId, exerciseId, exerciseName, totalSets, currentSeries, completedExerciseIds = [] } = route.params;
+  const {
+    workoutId,
+    exerciseId,
+    exerciseName,
+    totalSets,
+    currentSeries,
+    defaultReps = 10,
+    defaultWeight = 0,
+    completedExerciseIds = [],
+  } = route.params;
 
   // Estado do modal de registro
   const [modalVisible, setModalVisible] = useState(false);
-  const [reps,         setReps]         = useState(10);
-  const [weight,       setWeight]       = useState(10);
+  const [reps,         setReps]         = useState(defaultReps);
+  const [weight,       setWeight]       = useState(defaultWeight);
+  const [lastRecord,   setLastRecord]   = useState<{ reps: number; weight: number } | null>(null);
+  const [isLoadingLast,setIsLoadingLast]= useState(true);
   const [isSaving,     setIsSaving]     = useState(false);
   const [saveError,    setSaveError]    = useState('');
 
-  // Última performance (em produção: buscar do Firestore)
-  const lastPerformance = `10 reps - 40Kg`;
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      setIsLoadingLast(true);
+      try {
+        const record = await workoutSessionService.getLastRecord(workoutId, exerciseId);
+        if (!alive) return;
+        setLastRecord(record);
+        if (record) {
+          setReps(record.reps);
+          setWeight(record.weight);
+        } else {
+          setReps(defaultReps);
+          setWeight(defaultWeight);
+        }
+      } catch {
+        if (!alive) return;
+        setLastRecord(null);
+        setReps(defaultReps);
+        setWeight(defaultWeight);
+      } finally {
+        if (alive) setIsLoadingLast(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [workoutId, exerciseId, defaultReps, defaultWeight]);
+
+  const lastPerformance = isLoadingLast
+    ? 'Carregando...'
+    : lastRecord
+      ? `${lastRecord.reps} reps - ${lastRecord.weight}Kg`
+      : `${defaultReps} reps - ${defaultWeight}Kg`;
 
   const handleConcluirSerie = () => setModalVisible(true);
 
@@ -97,6 +180,8 @@ export default function ExecuteSeriesScreen() {
         navigation.navigate('RestTimer', {
           workoutId, exerciseId, exerciseName,
           totalSets, currentSeries,
+          defaultReps,
+          defaultWeight,
           completedExerciseIds,
         });
       } else {
@@ -104,6 +189,8 @@ export default function ExecuteSeriesScreen() {
         navigation.navigate('RestTimer', {
           workoutId, exerciseId, exerciseName,
           totalSets, currentSeries,
+          defaultReps,
+          defaultWeight,
           completedExerciseIds,
         });
       }
@@ -175,7 +262,7 @@ export default function ExecuteSeriesScreen() {
             <Text style={modal.title}>Registrar série</Text>
 
             <Stepper label="Repetições" value={reps}   min={1} max={100} onChange={setReps}   />
-            <Stepper label="Peso (Kg)"  value={weight} min={0} max={500} step={2.5} onChange={setWeight} />
+            <Stepper label="Peso (Kg)"  value={weight} min={0} max={500} step={1} onChange={setWeight} />
 
             {!!saveError && (
               <Text style={modal.errorText}>{saveError}</Text>

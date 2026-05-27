@@ -76,6 +76,8 @@ export default function ChooseExerciseScreen() {
             exerciseName: item.name,
             totalSets:    item.sets,
             currentSeries: 1,
+            defaultReps:   item.reps,
+            defaultWeight: item.weight,
             completedExerciseIds: Array.from(completed),
           });
         }}

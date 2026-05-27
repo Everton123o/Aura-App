@@ -2,6 +2,7 @@ import { initializeApp, getApp, getApps } from 'firebase/app';
 import {
   getAuth,
   initializeAuth,
+  inMemoryPersistence,
   getReactNativePersistence,
 } from 'firebase/auth';
 import { getFirestore, initializeFirestore } from 'firebase/firestore';
@@ -34,7 +35,9 @@ export const auth = (() => {
       return getAuth(app);
     }
     return initializeAuth(app, {
-      persistence: getReactNativePersistence(AsyncStorage),
+      persistence: __DEV__
+        ? inMemoryPersistence
+        : getReactNativePersistence(AsyncStorage),
     });
   } catch {
     return getAuth(app);

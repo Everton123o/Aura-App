@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Image,
   RefreshControl,
   SafeAreaView,
   ScrollView,
@@ -55,11 +56,13 @@ export default function HomeScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={s.safe}>
       <View style={s.header}>
-        <View style={s.headerTop}>
-          <View style={s.logoRow}>
-            <View style={s.logoCircle}>
-              <Ionicons name="barbell-outline" size={18} color="#fff" />
-            </View>
+          <View style={s.headerTop}>
+            <View style={s.logoRow}>
+            <Image
+              source={require('../../../img/aura-logo-removebg-preview.png')}
+              style={s.logoCircle}
+              resizeMode="cover"
+            />
             <Text style={s.logoText}>Aura</Text>
           </View>
           <TouchableOpacity style={s.avatar} onPress={logout} activeOpacity={0.75}>
@@ -111,7 +114,7 @@ const s = StyleSheet.create({
   header:      { backgroundColor: '#fff', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 16, borderBottomWidth: 0.5, borderBottomColor: '#E2E6F0' },
   headerTop:   { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
   logoRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  logoCircle:  { width: 32, height: 32, borderRadius: 16, backgroundColor: '#4A6CF7', alignItems: 'center', justifyContent: 'center' },
+  logoCircle:  { width: 32, height: 32, borderRadius: 16, backgroundColor: '#fff' },
   logoText:    { fontSize: 18, fontWeight: '700', color: '#4A6CF7' },
   avatar:      { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EEF0FE', alignItems: 'center', justifyContent: 'center' },
   avatarTxt:   { fontSize: 12, fontWeight: '700', color: '#4A6CF7' },
