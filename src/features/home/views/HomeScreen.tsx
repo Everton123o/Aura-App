@@ -59,7 +59,7 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={s.headerTop}>
             <View style={s.logoRow}>
             <Image
-              source={require('../../../img/aura-logo-removebg-preview.png')}
+              source={require('../../../img/ChatGPT Image 17 de abr. de 2026, 17_58_30 (1).png')}
               style={s.logoCircle}
               resizeMode="cover"
             />
