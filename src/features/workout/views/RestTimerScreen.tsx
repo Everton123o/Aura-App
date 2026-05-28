@@ -40,6 +40,7 @@ export default function RestTimerScreen() {
     defaultReps,
     defaultWeight,
     completedExerciseIds = [],
+    sessionStartedAt,
   } = route.params;
 
   // Phase: 'choose' | 'countdown'
@@ -129,7 +130,7 @@ export default function RestTimerScreen() {
     if (isLastSeries) {
       // Todas as séries desse exercício → volta pra escolha
       const nextCompleted = Array.from(new Set([...completedExerciseIds, exerciseId]));
-      navigation.replace('ChooseExercise', { workoutId, completedExerciseIds: nextCompleted });
+      navigation.replace('ChooseExercise', { workoutId, completedExerciseIds: nextCompleted, sessionStartedAt });
     } else {
       // Próxima série
       navigation.replace('ExecuteSeries', {
@@ -141,6 +142,7 @@ export default function RestTimerScreen() {
         defaultReps,
         defaultWeight,
         completedExerciseIds,
+        sessionStartedAt,
       });
     }
   };

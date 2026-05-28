@@ -15,6 +15,14 @@ interface SeriesRecord {
   weight:     number;
 }
 
+export interface SavedSeriesRecord {
+  id: string;
+  series: number;
+  reps: number;
+  weight: number;
+  executedAt: string;
+}
+
 function mapSessionError(error: any): AppError {
   const code = error?.code ?? 'session/save-failed';
 
@@ -80,5 +88,28 @@ export const workoutSessionService = {
 
     const d = lastDoc.data();
     return { reps: d.reps, weight: d.weight };
+  },
+
+  async getExerciseRecords(
+    workoutId: string,
+    exerciseId: string
+  ): Promise<SavedSeriesRecord[]> {
+    const { getDocs, query, orderBy, collection: col } = await import('firebase/firestore');
+    const uid = auth.currentUser?.uid;
+    if (!uid) return [];
+
+    const ref = col(db, 'users', uid, 'workouts', workoutId, 'exercises', exerciseId, 'records');
+    const snap = await getDocs(query(ref, orderBy('executedAt', 'desc')));
+
+    return snap.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        series: Number(data.series ?? 0),
+        reps: Number(data.reps ?? 0),
+        weight: Number(data.weight ?? 0),
+        executedAt: String(data.executedAt ?? ''),
+      };
+    });
   },
 };

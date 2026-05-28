@@ -114,6 +114,7 @@ export default function ExecuteSeriesScreen() {
     defaultReps = 10,
     defaultWeight = 0,
     completedExerciseIds = [],
+    sessionStartedAt,
   } = route.params;
 
   // Estado do modal de registro
@@ -183,6 +184,7 @@ export default function ExecuteSeriesScreen() {
           defaultReps,
           defaultWeight,
           completedExerciseIds,
+          sessionStartedAt,
         });
       } else {
         // Vai pro descanso e depois volta pra próxima série
@@ -192,6 +194,7 @@ export default function ExecuteSeriesScreen() {
           defaultReps,
           defaultWeight,
           completedExerciseIds,
+          sessionStartedAt,
         });
       }
     } catch (error: any) {
