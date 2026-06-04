@@ -42,6 +42,7 @@ export default function WorkoutExercisesScreen() {
   const renderExercise = ({ item, index }: { item: Exercise; index: number }) => (
     <TouchableOpacity
       style={styles.exerciseCard}
+      onPress={() => navigation.navigate('EditExercise', { workoutId, exerciseId: item.id })}
       onLongPress={() => confirmDelete(item)}
       activeOpacity={0.8}
     >
@@ -56,7 +57,7 @@ export default function WorkoutExercisesScreen() {
         </Text>
       </View>
       <View style={styles.exerciseChevron}>
-        <Text style={styles.chevronText}>›</Text>
+        <Text style={styles.chevronText}>✎</Text>
       </View>
     </TouchableOpacity>
   );
@@ -71,7 +72,7 @@ export default function WorkoutExercisesScreen() {
           style={styles.backBtn}
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <Text style={styles.backIcon}>←</Text>
+          <Text style={styles.backIcon}>‹</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Exercícios</Text>
         <View style={styles.headerRight}>

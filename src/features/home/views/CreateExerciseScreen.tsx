@@ -148,7 +148,7 @@ export default function CreateExerciseScreen() {
             style={styles.backBtn}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Text style={styles.backIcon}>←</Text>
+            <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
 
           {/* ── Title ── */}
