@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -9,6 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -106,7 +108,9 @@ export default function EditExerciseScreen({ route, navigation }: Props) {
         reps,
         weight,
       });
-      navigation.goBack();
+      Alert.alert('Sucesso', 'Exercício salvo com sucesso.', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
     } catch {
       Alert.alert('Erro', 'Não foi possível salvar as alterações.');
     } finally {
@@ -137,6 +141,7 @@ export default function EditExerciseScreen({ route, navigation }: Props) {
         <View style={{ width: 36 }} />
       </View>
 
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={s.scroll}
         contentContainerStyle={s.scrollContent}
@@ -184,6 +189,7 @@ export default function EditExerciseScreen({ route, navigation }: Props) {
           min={0}
         />
       </ScrollView>
+      </TouchableWithoutFeedback>
 
       <View style={s.footer}>
         <TouchableOpacity

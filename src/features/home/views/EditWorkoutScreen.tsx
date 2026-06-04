@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -10,6 +11,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -75,7 +77,9 @@ export default function EditWorkoutScreen({ route, navigation }: Props) {
       await workoutService.update(workoutId, {
         name: workoutName.trim(),
       });
-      navigation.goBack();
+      Alert.alert('Sucesso', 'Treino salvo com sucesso.', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
     } catch {
       Alert.alert('Erro', 'Não foi possível salvar as alterações.');
     } finally {
@@ -134,6 +138,7 @@ export default function EditWorkoutScreen({ route, navigation }: Props) {
         <View style={{ width: 36 }} />
       </View>
 
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -228,6 +233,7 @@ export default function EditWorkoutScreen({ route, navigation }: Props) {
           <Text style={styles.addBtnText}>+ Adicionar exercício</Text>
         </TouchableOpacity>
       </ScrollView>
+      </TouchableWithoutFeedback>
 
       <View style={styles.footer}>
         <TouchableOpacity
