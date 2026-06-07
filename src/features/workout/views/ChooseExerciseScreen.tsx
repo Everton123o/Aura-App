@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  FlatList, ActivityIndicator, Alert,
+  FlatList, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -24,7 +24,7 @@ export default function ChooseExerciseScreen() {
   const [exercises,  setExercises]  = useState<Exercise[]>([]);
   const [completed,  setCompleted]  = useState<Set<string>>(new Set());
   const [isLoading,  setIsLoading]  = useState(true);
-  const [startTime]                 = useState(Date.now());
+  const [startTime]                 = useState(route.params.sessionStartedAt ?? Date.now());
 
   useEffect(() => {
     (async () => {
@@ -42,20 +42,7 @@ export default function ChooseExerciseScreen() {
   }, [completedExerciseId, completedExerciseIds]);
 
   const handleFinish = () => {
-    Alert.alert(
-      'Finalizar treino',
-      'Tem certeza que deseja encerrar o treino?',
-      [
-        { text: 'Continuar', style: 'cancel' },
-        {
-          text: 'Finalizar',
-          style: 'destructive',
-          onPress: () => {
-            navigation.replace('Home');
-          },
-        },
-      ]
-    );
+    navigation.replace('WorkoutSummary', { workoutId, sessionStartedAt: startTime });
   };
 
   const completedCount = completed.size;
@@ -79,6 +66,7 @@ export default function ChooseExerciseScreen() {
             defaultReps:   item.reps,
             defaultWeight: item.weight,
             completedExerciseIds: Array.from(completed),
+            sessionStartedAt: startTime,
           });
         }}
         disabled={done || allDone}

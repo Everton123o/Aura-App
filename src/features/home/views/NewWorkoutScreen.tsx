@@ -10,6 +10,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -30,7 +31,6 @@ export default function NewWorkoutScreen() {
 
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [nameTouched, setNameTouched] = useState(false);
-
   const showNameError = (nameTouched && name.trim() === '') || !!errors.name;
 
   function handleProceed() {
@@ -47,6 +47,7 @@ export default function NewWorkoutScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={8}
       >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -58,7 +59,7 @@ export default function NewWorkoutScreen() {
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             activeOpacity={0.75}
           >
-            <Text style={styles.backIcon}>←</Text>
+            <Text style={styles.backIcon}>‹</Text>
           </TouchableOpacity>
 
           <Text style={styles.title}>Novo treino</Text>
@@ -123,6 +124,7 @@ export default function NewWorkoutScreen() {
             )}
           </TouchableOpacity>
         </ScrollView>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

@@ -9,9 +9,12 @@ import HomeScreen       from '../features/home/views/HomeScreen';
 import NewWorkoutScreen from '../features/home/views/NewWorkoutScreen';
 import WorkoutExercisesScreen from '../features/home/views/WorkoutExercisesScreen';
 import CreateExerciseScreen from '../features/home/views/CreateExerciseScreen';
+import EditWorkoutScreen from '../features/home/views/EditWorkoutScreen';
+import EditExerciseScreen from '../features/home/views/EditExerciseScreen';
 import ChooseExerciseScreen from '../features/workout/views/ChooseExerciseScreen';
 import ExecuteSeriesScreen from '../features/workout/views/ExecuteSeriesScreen';
 import RestTimerScreen from '../features/workout/views/RestTimerScreen';
+import WorkoutSummaryScreen from '../features/workout/views/WorkoutSummaryScreen';
 import { useAuth } from '../features/auth/contexts/AuthContext';
 
 export type RootStackParamList = {
@@ -21,9 +24,16 @@ export type RootStackParamList = {
   NewWorkout:     undefined;
   WorkoutExercises: { workoutId: string };
   CreateExercise:   { workoutId: string };
-  EditWorkout:    { workoutId: string };
-  ExecuteWorkout: { workoutId: string };
-  ChooseExercise: { workoutId: string; completedExerciseId?: string; completedExerciseIds?: string[] };
+  EditWorkout:      { workoutId: string };
+  EditExercise:     { workoutId: string; exerciseId: string };
+  ExecuteWorkout:   { workoutId: string };
+  ChooseExercise: {
+    workoutId: string;
+    completedExerciseId?: string;
+    completedExerciseIds?: string[];
+    sessionStartedAt?: number;
+  };
+  WorkoutSummary: { workoutId: string; sessionStartedAt?: number };
   ExecuteSeries: {
     workoutId: string;
     exerciseId: string;
@@ -33,6 +43,7 @@ export type RootStackParamList = {
     defaultReps?: number;
     defaultWeight?: number;
     completedExerciseIds?: string[];
+    sessionStartedAt?: number;
   };
   RestTimer: {
     workoutId: string;
@@ -43,6 +54,7 @@ export type RootStackParamList = {
     defaultReps?: number;
     defaultWeight?: number;
     completedExerciseIds?: string[];
+    sessionStartedAt?: number;
   };
 };
 
@@ -68,13 +80,16 @@ export default function AppNavigator() {
       >
         {user ? (
           <>
-            <Stack.Screen name="Home"       component={HomeScreen} />
-            <Stack.Screen name="NewWorkout" component={NewWorkoutScreen} />
+            <Stack.Screen name="Home"             component={HomeScreen} />
+            <Stack.Screen name="NewWorkout"       component={NewWorkoutScreen} />
             <Stack.Screen name="WorkoutExercises" component={WorkoutExercisesScreen} />
-            <Stack.Screen name="CreateExercise" component={CreateExerciseScreen} />
-            <Stack.Screen name="ChooseExercise" component={ChooseExerciseScreen} />
-            <Stack.Screen name="ExecuteSeries" component={ExecuteSeriesScreen} />
-            <Stack.Screen name="RestTimer" component={RestTimerScreen} />
+            <Stack.Screen name="CreateExercise"   component={CreateExerciseScreen} />
+            <Stack.Screen name="EditWorkout"      component={EditWorkoutScreen} />
+            <Stack.Screen name="EditExercise"     component={EditExerciseScreen} />
+            <Stack.Screen name="ChooseExercise"   component={ChooseExerciseScreen} />
+            <Stack.Screen name="ExecuteSeries"    component={ExecuteSeriesScreen} />
+            <Stack.Screen name="RestTimer"        component={RestTimerScreen} />
+            <Stack.Screen name="WorkoutSummary"   component={WorkoutSummaryScreen} />
           </>
         ) : (
           <>

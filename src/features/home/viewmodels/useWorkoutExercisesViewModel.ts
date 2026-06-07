@@ -1,9 +1,11 @@
 // src/features/home/viewmodels/useWorkoutExercisesViewModel.ts
 import { useState, useCallback } from 'react';
+import { Alert } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Exercise } from '../models/WorkoutTypes';
 import { exerciseService } from '../../../services/exerciseService';
+import { workoutService } from '../../../services/workoutService';
 import type { RootStackParamList } from '../../../navigation/AppNavigator';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
@@ -41,9 +43,15 @@ export function useWorkoutExercisesViewModel(workoutId: string) {
     }
   };
 
-  const handleConclude = () => {
-    // Volta pra Home após montar o treino
-    navigation.navigate('Home');
+  const handleConclude = async () => {
+    try {
+      await workoutService.complete(workoutId);
+      Alert.alert('Sucesso', 'Treino criado com sucesso.', [
+        { text: 'OK', onPress: () => navigation.navigate('Home') },
+      ]);
+    } catch {
+      setError('Não foi possível concluir o treino');
+    }
   };
 
   return { exercises, isLoading, error, deleteExercise, handleConclude, reload: load };

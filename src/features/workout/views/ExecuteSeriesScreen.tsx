@@ -114,6 +114,7 @@ export default function ExecuteSeriesScreen() {
     defaultReps = 10,
     defaultWeight = 0,
     completedExerciseIds = [],
+    sessionStartedAt,
   } = route.params;
 
   // Estado do modal de registro
@@ -131,7 +132,7 @@ export default function ExecuteSeriesScreen() {
     (async () => {
       setIsLoadingLast(true);
       try {
-        const record = await workoutSessionService.getLastRecord(workoutId, exerciseId);
+        const record = await workoutSessionService.getLastRecord(workoutId, exerciseId, currentSeries);
         if (!alive) return;
         setLastRecord(record);
         if (record) {
@@ -154,7 +155,7 @@ export default function ExecuteSeriesScreen() {
     return () => {
       alive = false;
     };
-  }, [workoutId, exerciseId, defaultReps, defaultWeight]);
+  }, [workoutId, exerciseId, currentSeries, defaultReps, defaultWeight]);
 
   const lastPerformance = isLoadingLast
     ? 'Carregando...'
@@ -183,6 +184,7 @@ export default function ExecuteSeriesScreen() {
           defaultReps,
           defaultWeight,
           completedExerciseIds,
+          sessionStartedAt,
         });
       } else {
         // Vai pro descanso e depois volta pra próxima série
@@ -192,6 +194,7 @@ export default function ExecuteSeriesScreen() {
           defaultReps,
           defaultWeight,
           completedExerciseIds,
+          sessionStartedAt,
         });
       }
     } catch (error: any) {
@@ -210,7 +213,7 @@ export default function ExecuteSeriesScreen() {
         style={styles.backBtn}
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       >
-        <Text style={styles.backIcon}>←</Text>
+        <Text style={styles.backIcon}>‹</Text>
       </TouchableOpacity>
 
       {/* ── Exercise name ── */}
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
 
 const modal = StyleSheet.create({
   overlay: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.45)' },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
   sheet: {
     backgroundColor: CARD, borderTopLeftRadius: 24, borderTopRightRadius: 24,
     paddingHorizontal: 24, paddingTop: 16, paddingBottom: 32,

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   RefreshControl,
   SafeAreaView,
@@ -52,6 +53,20 @@ export default function HomeScreen({ navigation }: Props) {
     setRefreshing(false);
   }
 
+  function confirmDeleteWorkout(workoutId: string) {
+    Alert.alert('Excluir treino?', 'Esta ação não pode ser desfeita.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteWorkout(workoutId);
+          Alert.alert('Sucesso', 'Treino excluído com sucesso.');
+        },
+      },
+    ]);
+  }
+
   const userName = user?.username || 'Usuário';
   return (
     <SafeAreaView style={s.safe}>
@@ -59,7 +74,7 @@ export default function HomeScreen({ navigation }: Props) {
           <View style={s.headerTop}>
             <View style={s.logoRow}>
             <Image
-              source={require('../../../img/aura-logo-removebg-preview.png')}
+              source={require('../../../img/ChatGPT Image 17 de abr. de 2026, 17_58_30 (1).png')}
               style={s.logoCircle}
               resizeMode="cover"
             />
@@ -94,7 +109,8 @@ export default function HomeScreen({ navigation }: Props) {
               key={w.id}
               workout={w}
               onStart={() => navigation.navigate('ChooseExercise', { workoutId: w.id })}
-              onDelete={() => deleteWorkout(w.id)}
+              onEdit={() => navigation.navigate('EditWorkout', { workoutId: w.id })}
+              onDelete={() => confirmDeleteWorkout(w.id)}
             />
           ))
         )}

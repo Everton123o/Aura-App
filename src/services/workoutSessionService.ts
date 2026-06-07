@@ -15,6 +15,14 @@ interface SeriesRecord {
   weight:     number;
 }
 
+export interface SavedSeriesRecord {
+  id: string;
+  series: number;
+  reps: number;
+  weight: number;
+  executedAt: string;
+}
+
 function mapSessionError(error: any): AppError {
   const code = error?.code ?? 'session/save-failed';
 
@@ -56,18 +64,52 @@ export const workoutSessionService = {
 
   async getLastRecord(
     workoutId: string,
-    exerciseId: string
+    exerciseId: string,
+    series?: number
   ): Promise<{ reps: number; weight: number } | null> {
     // Importação dinâmica para não poluir o bundle se não for usada
-    const { getDocs, query, orderBy, limit, collection: col } = await import('firebase/firestore');
+    const { getDocs, query, where, orderBy, limit, collection: col } = await import('firebase/firestore');
     const uid = auth.currentUser?.uid;
     if (!uid) return null;
 
     const ref  = col(db, 'users', uid, 'workouts', workoutId, 'exercises', exerciseId, 'records');
-    const snap = await getDocs(query(ref, orderBy('executedAt', 'desc'), limit(1)));
+    const snap = series
+      ? await getDocs(query(ref, where('series', '==', series)))
+      : await getDocs(query(ref, orderBy('executedAt', 'desc'), limit(1)));
     if (snap.empty) return null;
 
-    const d = snap.docs[0].data();
+    const lastDoc = series
+      ? snap.docs.reduce((latest, doc) => {
+          const latestAt = String(latest.data().executedAt ?? '');
+          const docAt = String(doc.data().executedAt ?? '');
+          return docAt > latestAt ? doc : latest;
+        }, snap.docs[0])
+      : snap.docs[0];
+
+    const d = lastDoc.data();
     return { reps: d.reps, weight: d.weight };
+  },
+
+  async getExerciseRecords(
+    workoutId: string,
+    exerciseId: string
+  ): Promise<SavedSeriesRecord[]> {
+    const { getDocs, query, orderBy, collection: col } = await import('firebase/firestore');
+    const uid = auth.currentUser?.uid;
+    if (!uid) return [];
+
+    const ref = col(db, 'users', uid, 'workouts', workoutId, 'exercises', exerciseId, 'records');
+    const snap = await getDocs(query(ref, orderBy('executedAt', 'desc')));
+
+    return snap.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        series: Number(data.series ?? 0),
+        reps: Number(data.reps ?? 0),
+        weight: Number(data.weight ?? 0),
+        executedAt: String(data.executedAt ?? ''),
+      };
+    });
   },
 };
