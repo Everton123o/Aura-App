@@ -33,7 +33,8 @@ export function useRegisterViewModel() {
       setAuthenticatedUser(result.user);
       onSuccess();
     } catch (err: any) {
-      setErrors({ general: err?.message || 'Não foi possível criar sua conta.' });
+      const message = err?.message || 'Não foi possível criar sua conta.';
+      setErrors({ general: message });
     } finally {
       setLoading(false);
     }

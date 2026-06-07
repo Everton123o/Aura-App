@@ -28,7 +28,8 @@ export function useLoginViewModel() {
       setAuthenticatedUser(result.user);
       onSuccess();
     } catch (err: any) {
-      setErrors({ general: err?.message || 'Não foi possível entrar.' });
+      const message = err?.message || 'Não foi possível entrar.';
+      setErrors({ general: message });
     } finally {
       setLoading(false);
     }
