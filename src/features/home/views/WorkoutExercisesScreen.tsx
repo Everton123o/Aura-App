@@ -24,7 +24,17 @@ type RouteProp_ = RouteProp<RootStackParamList, 'WorkoutExercises'>;
 export default function WorkoutExercisesScreen() {
   const navigation = useNavigation<NavProp>();
   const route      = useRoute<RouteProp_>();
-  const { workoutId } = route.params;
+  const workoutId = route.params?.workoutId;
+
+  if (!workoutId) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+        <View style={styles.center}>
+          <Text style={styles.errorText}>Treino invalido. Volte e tente abrir novamente.</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const { exercises, isLoading, error, deleteExercise, handleConclude } =
     useWorkoutExercisesViewModel(workoutId);

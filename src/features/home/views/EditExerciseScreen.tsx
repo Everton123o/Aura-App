@@ -10,12 +10,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { doc, updateDoc } from 'firebase/firestore';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
+import type { RootStackParamList } from '../../../navigation/AppNavigator';
 import { auth, db } from '../../../constants/firebaseConfig';
 import { exerciseService } from '../../../services/exerciseService';
 import { Exercise } from '../models/WorkoutTypes';
@@ -141,11 +140,11 @@ export default function EditExerciseScreen({ route, navigation }: Props) {
         <View style={{ width: 36 }} />
       </View>
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={s.scroll}
         contentContainerStyle={s.scrollContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <Text style={s.sectionLabel}>Nome do exercício</Text>
@@ -189,8 +188,6 @@ export default function EditExerciseScreen({ route, navigation }: Props) {
           min={0}
         />
       </ScrollView>
-      </TouchableWithoutFeedback>
-
       <View style={s.footer}>
         <TouchableOpacity
           style={[s.btnPrimary, saving && s.btnDisabled]}

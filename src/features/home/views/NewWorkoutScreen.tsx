@@ -10,11 +10,11 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
+import type { RootStackParamList } from '../../../navigation/AppNavigator';
 import { useNewWorkoutViewModel } from '../viewmodels/useNewWorkoutViewModel';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'NewWorkout'>;
@@ -36,7 +36,7 @@ export default function NewWorkoutScreen() {
   function handleProceed() {
     setNameTouched(true);
     handleCreate(workoutId => {
-      navigation.replace('WorkoutExercises', { workoutId });
+      navigation.navigate('WorkoutExercises', { workoutId });
     });
   }
 
@@ -47,10 +47,10 @@ export default function NewWorkoutScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={8}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
         >
           <TouchableOpacity
@@ -124,7 +124,6 @@ export default function NewWorkoutScreen() {
             )}
           </TouchableOpacity>
         </ScrollView>
-        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

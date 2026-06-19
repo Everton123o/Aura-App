@@ -11,13 +11,12 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
+import type { RootStackParamList } from '../../../navigation/AppNavigator';
 import { exerciseService } from '../../../services/exerciseService';
 import { workoutService } from '../../../services/workoutService';
 import { Exercise } from '../models/WorkoutTypes';
@@ -138,11 +137,11 @@ export default function EditWorkoutScreen({ route, navigation }: Props) {
         <View style={{ width: 36 }} />
       </View>
 
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.nameBlock}>
@@ -233,8 +232,6 @@ export default function EditWorkoutScreen({ route, navigation }: Props) {
           <Text style={styles.addBtnText}>+ Adicionar exercício</Text>
         </TouchableOpacity>
       </ScrollView>
-      </TouchableWithoutFeedback>
-
       <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.btnPrimary, saving && styles.btnDisabled]}
